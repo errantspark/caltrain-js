@@ -1,0 +1,20 @@
+{
+  "name": "caltrain-js",
+  "version": "0.0.1",
+  "description": "caltrain CLI and lib",
+  "main": "lib.js",
+  "bin": {
+    "trains": "./trains.js"
+  },
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "optionalDependencies": {
+    "jsdom": "^9.8.3"
+  }
+}
