@@ -47,15 +47,14 @@ const direction = {N:red+'NORTHBOUND'+reset, S:blue+'SOUTHBOUND'+reset}
 
 const nextTrain = table => stationName => (now=new Date()) => {
   //TODO get rid of this ugly kudge
-      table = tables[table]
-      let nowms = toMS(now)
-      let station = filterRow(table.times,table.stations)(["name",stationName])
-      const sortP = n => parseInt(n)?parseInt(n):0
-      station = station.sort((a,b)=>sortP(a)-sortP(b))
-      let index = station.findIndex(x => x>nowms)
-      let next = station[index]
-      let nextnext = station[index+1]?station[index+1]:station[0]
-      return console.log(direction[table.name]+' from '+matches[0]+" in "+fromMS(next-nowms)+' @ '+fromMS(next))
+  table = Array.prototype.isPrototypeOf(table)?table:[table]
+  let nowms = toMS(now)
+  let station = filterRow(table.times,table.stations)(["name",stationName])
+  const sortP = n => parseInt(n)?parseInt(n):0
+  station = station.sort((a,b)=>sortP(a)-sortP(b))
+  let index = station.findIndex(x => x>nowms)
+  let next = station[index]
+  return console.log(direction[table.name]+' from '+matches[0]+" in "+fromMS(next-nowms)+' @ '+fromMS(next))
 }
 
 module.exports = {
@@ -68,6 +67,7 @@ module.exports = {
   toMS : toMS ,
   parseTime : parseTime ,
   queryStation : queryStation ,
+  nextTrain : nextTrain ,
   nextTrain : nextTrain ,
   fuzzySearch : fuzzySearch 
 }
