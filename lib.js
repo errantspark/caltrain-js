@@ -18,6 +18,7 @@ const filterCol = (table,colKeys) => key => {
 }
 
 const filterRow = (table,rowKeys) => key => {
+  //console.log(table,rowKeys)
   const idx = rowKeys.findIndex(val => val[key[0]]===key[1])
   return table[idx]
 }
@@ -30,7 +31,7 @@ const fromMS = ms => {
 
 const fuzzySearch = array => query => {
   let arr = array
-  let qa = Array.prototype.slice.call(query)
+  let qa = query.split("")
   qa.forEach(letter => arr = arr.filter(x => x.match(new RegExp(letter)))) 
   return arr
 }
@@ -45,6 +46,7 @@ const blue = '\x1b[34m'
 const reset = '\x1b[0m'
 const direction = {N:red+'NORTHBOUND'+reset, S:blue+'SOUTHBOUND'+reset}
 
+/*
 const nextTrain = table => stationName => (now=new Date()) => {
   //TODO get rid of this ugly kudge
   table = Array.prototype.isPrototypeOf(table)?table:[table]
@@ -55,6 +57,29 @@ const nextTrain = table => stationName => (now=new Date()) => {
   let index = station.findIndex(x => x>nowms)
   let next = station[index]
   return console.log(direction[table.name]+' from '+matches[0]+" in "+fromMS(next-nowms)+' @ '+fromMS(next))
+}
+*/
+//nexttrain from trainsjs
+const nextTrain = timetable => query => (now=new Date()) => {
+  const timetables = Array.prototype.isPrototypeOf(timetable)?timetable:[timetable]
+  let names = timetable[0].stations.map(x=>x.name)
+  let matches = fuzzySearch(names)(query)
+  if (matches.length == 1){
+    timetables.forEach(table =>{
+      let nowms = toMS(now)
+      let station = filterRow(table.times,table.stations)(["name",matches[0]])
+      const sortP = n => parseInt(n)?parseInt(n):0
+      station = station.sort((a,b)=>sortP(a)-sortP(b))
+      let index = station.findIndex(x => x>nowms)
+      let next = station[index]
+      let nextnext = station[index+1]?station[index+1]:station[0]
+      return console.log(direction[table.name]+' from '+matches[0]+" in "+fromMS(next-nowms)+' @ '+fromMS(next))
+    })
+  } else if (matches.length >= 2) {
+    console.log(red+'sorry, query aliasing happened :( \nquery: "'+query+'" actually matches '+ matches)
+  } else {
+    console.log(red+"sorry, query didn't match anything :( ")
+  }
 }
 
 module.exports = {
