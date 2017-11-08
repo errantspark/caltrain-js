@@ -82,6 +82,21 @@ const nextTrain = timetable => query => (now=new Date()) => {
   }
 }
 
+importGTFS = gtfsDir => {
+let parseGTFS = gtfsBuff => {
+let array = gtfsBuff.toString().split("\n").map(e => e.split(","))
+let keys = array[0]
+let rest = array.slice(1)
+return {keys,rest}
+}
+let dir = fs.readdirSync(gtfsDir)
+let parsedGTFS = dir.map(file => fs.readFileSync(`${gtfsDir}/${file}`)).map(f => parseGTFS(f))
+let raw = {}
+dir.forEach((file,i) => raw[file.match(/(.*)\./)[1]] = parsedGTFS[i])
+return {raw}
+}
+trains = importGTFS("./GTFS")
+
 module.exports = {
   compose : compose ,
   tables : tables ,
